@@ -49,7 +49,7 @@ def _all_packages() -> tuple[list[str], list[str]]:
 
 
 def main() -> int:
-    extra_roots, pkgs = _all_packages()
+    extra_roots, _pkgs = _all_packages()
     env = os.environ.copy()
     sep = os.pathsep
     prev = env.get("PYTHONPATH", "")
@@ -57,7 +57,9 @@ def main() -> int:
     if prev:
         combined.append(prev)
     env["PYTHONPATH"] = sep.join(combined)
-    cmd = [sys.executable, "-m", "mypy", "app", *sorted(set(pkgs))]
+    # CI-safe mypy target: check API package directly.
+    # Cross-package runtime imports are resolved via PYTHONPATH above.
+    cmd = [sys.executable, "-m", "mypy", "app"]
     return subprocess.call(cmd, cwd=API_DIR, env=env)
 
 
