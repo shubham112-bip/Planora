@@ -141,13 +141,11 @@ class BaseTool(ABC, Generic[RequestModelT, ResponseModelT]):
 
         if isinstance(
             last_error,
-            (
-                ToolConfigurationError,
-                ToolTimeoutError,
-                ToolRateLimitError,
-                ToolUpstreamError,
-                ToolPayloadError,
-            ),
+            ToolConfigurationError
+            | ToolTimeoutError
+            | ToolRateLimitError
+            | ToolUpstreamError
+            | ToolPayloadError,
         ):
             raise last_error
         raise ToolError(f"{self.name} failed after {max_attempts} attempts") from last_error
@@ -186,7 +184,7 @@ class BaseTool(ABC, Generic[RequestModelT, ResponseModelT]):
             return ToolRateLimitError(f"{self.name} rate limited by upstream")
         if isinstance(status_code, int) and status_code >= 500:
             return ToolUpstreamError(f"{self.name} upstream failure (status={status_code})")
-        if isinstance(exc, (ValueError, TypeError)):
+        if isinstance(exc, ValueError | TypeError):
             return ToolPayloadError(f"{self.name} produced invalid payload: {exc}")
         if isinstance(exc, ConnectionError):
             return ToolUpstreamError(f"{self.name} network failure: {exc}")

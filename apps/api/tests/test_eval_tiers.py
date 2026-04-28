@@ -14,8 +14,8 @@ from collections.abc import Iterable
 import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
 from app.api import trip_planning
+from app.main import app
 
 
 def _plan(
